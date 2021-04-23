@@ -1,18 +1,29 @@
 import Foundation
 
+/// The `Model` will be initialized with a training dataset
+/// which the model will use the learn the frequency of different words in different topics.
+/// Then its `predictTopic` method can be used to compute the probabilities
+/// that a given article belongs to any of the topics the model was trained on
+/// and which are accessible through the `topics` property.
 struct Model {
-    private let topics: [Topic]
+    let topics: [Topic]
     private let wordCountByTopic: [Topic: [String: Int]]
     private let totalWordCountByTopic: [Topic: Int]
     private let uniqueWordCount: Int
 
-    init(articles: [Article]) {
-        wordCountByTopic = getWordCountByTopic(articles)
+    /// Initialize the `Model` and train it on the provided `dataset`.
+    /// Note that the initialization can be quite slow
+    /// as it involves the computationally intensive training.
+    /// The model is ready to use for classification tasks as soon as it has been initialized.
+    init(dataset: [Article]) {
+        wordCountByTopic = getWordCountByTopic(dataset)
         topics = Array(wordCountByTopic.keys)
-        totalWordCountByTopic = getTotalWordCountByTopic(articles)
-        uniqueWordCount = getUniqueWordCount(articles)
+        totalWordCountByTopic = getTotalWordCountByTopic(dataset)
+        uniqueWordCount = getUniqueWordCount(dataset)
     }
 
+    /// Compute the probabilities of the given `content`
+    /// belonging to each of the topics the model was trained on.
     func predictTopic(_ content: [String]) -> [Topic: Double] {
         var probabilities = [Topic: Double]()
         for topic in topics {

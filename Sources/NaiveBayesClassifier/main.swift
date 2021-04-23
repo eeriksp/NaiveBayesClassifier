@@ -1,7 +1,9 @@
 print(softmax(["a": -1, "b": 2, "c": 2.5]))
-print(sum(softmax(["a": -1, "b": 2, "c": 2.5]).values.map{Double($0)}))
+print(sum(softmax(["a": -1, "b": 2, "c": 2.5]).values.map {
+    Double($0)
+}))
 
-let model = try Model(articles: readArticlesFromCSV("data/bbc_train.csv"))
+let model = try Model(dataset: readArticlesFromCSV("data/bbc_train.csv"))
 var hits = 0
 var misses = 0
 for article in try readArticlesFromCSV("data/bbc_test.csv") {
