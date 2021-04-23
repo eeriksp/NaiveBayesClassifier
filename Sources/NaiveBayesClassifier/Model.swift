@@ -5,7 +5,7 @@ import Foundation
 /// Then its `predictTopic` method can be used to compute the probabilities
 /// that a given article belongs to any of the topics the model was trained on
 /// and which are accessible through the `topics` property.
-struct Model {
+public struct Model {
     let topics: [Topic]
     private let wordCountByTopic: [Topic: [String: Int]]
     private let totalWordCountByTopic: [Topic: Int]
@@ -15,7 +15,7 @@ struct Model {
     /// Note that the initialization can be quite slow
     /// as it involves the computationally intensive training.
     /// The model is ready to use for classification tasks as soon as it has been initialized.
-    init(dataset: [Article]) {
+    public init(dataset: [Article]) {
         wordCountByTopic = getWordCountByTopic(dataset)
         topics = Array(wordCountByTopic.keys)
         totalWordCountByTopic = getTotalWordCountByTopic(dataset)
@@ -24,12 +24,12 @@ struct Model {
 
     /// Compute the probabilities of the given `content`
     /// belonging to each of the topics the model was trained on.
-    func predictTopic(_ content: [String]) -> [Topic: Double] {
+    public func predictTopic(_ content: [String]) -> PredictionResult {
         var probabilities = [Topic: Double]()
         for topic in topics {
             probabilities[topic] = getProbabilityOfArticleBelongingToTopic(content: content, topic: topic)
         }
-        return probabilities
+        return softmax(probabilities)
     }
 
     private func getProbabilityOfArticleBelongingToTopic(content: [String], topic: Topic) -> Double {
@@ -44,6 +44,24 @@ struct Model {
         // the +1 at the end of next line prevents the result value from ever evaluating to zero
         let wordOccurrencesInCategory = (wordCountByTopic[topic]?[word] ?? 0) + 1
         return Double(wordOccurrencesInCategory) / Double((totalWordCountByTopic[topic] ?? 0) + uniqueWordCount)
+    }
+}
+
+public typealias PredictionResult = Dictionary<String, Double>
+
+public extension PredictionResult {
+    var topLabel: Topic {
+        get {
+            var mostLikelyTopic = ""
+            var mostLikelyTopicProbability = -Double.infinity
+            for (topic, prob) in self {
+                if prob > mostLikelyTopicProbability {
+                    mostLikelyTopic = topic
+                    mostLikelyTopicProbability = prob
+                }
+            }
+            return mostLikelyTopic
+        }
     }
 }
 

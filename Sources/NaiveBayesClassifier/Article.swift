@@ -1,8 +1,9 @@
 import Foundation
 
-typealias Topic = String
+// TODO Perhaps rename to `Label`
+public typealias Topic = String
 
-struct Article {
+public struct Article {
     let topic: Topic
     let content: [String]
 }
