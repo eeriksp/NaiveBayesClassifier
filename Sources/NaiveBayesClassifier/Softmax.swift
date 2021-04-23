@@ -11,7 +11,7 @@ private let softmaxExponentBase = 1.1
 /// The exponent base `softmaxExponentBase` is set to 1.1 instead of e to make the numbers smaller.
 /// When using e or any other bigger number as the exponent base,
 /// the results will be so tiny that they evaluate to 0.
-public func softmax(_ dict: [String: Double]) -> [String: Double] {
+func softmax(_ dict: [String: Double]) -> [String: Double] {
     let deliminator = sum(dict.values.map {
         pow(softmaxExponentBase, $0)
     })
