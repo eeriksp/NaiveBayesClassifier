@@ -25,19 +25,14 @@ private func constructArticleFromLine(_ line: String) -> Article {
 /// enforcing lowercase
 /// and filtering out very short words.
 private func cleanContent(_ content: String) -> [String] {
-    let words = String(String(content.dropFirst().dropLast())
-            .replacingOccurrences(of: "\r", with: "")
-            .replacingOccurrences(of: "\n", with: " ")
-            .replacingOccurrences(of: "\"", with: ""))
-            .lowercased().split(separator: " ")
-    return words.filter {
-        $0.count > 3
-    }.map(String.init)
+    cleansText(String(String(content.dropFirst().dropLast())))
 }
 
 private func readLinesFromCSV(_ filename: String) throws -> [String] {
     let content = try String(contentsOf: URL(fileURLWithPath: filename))
-    return content.split { $0.isNewline }.map(String.init)
+    return content.split {
+        $0.isNewline
+    }.map(String.init)
 }
 
 
