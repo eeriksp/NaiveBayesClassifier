@@ -6,9 +6,9 @@ import Foundation
 /// that a given article belongs to any of the topics the model was trained on
 /// and which are accessible through the `topics` property.
 public struct Model {
-    let topics: [Topic]
-    let wordCountByTopic: [Topic: [String: Int]]
-    let totalWordCountByTopic: [Topic: Int]
+    let topics: [Label]
+    let wordCountByTopic: [Label: [String: Int]]
+    let totalWordCountByTopic: [Label: Int]
     let uniqueWordCount: Int
 
     /// Initialize the `Model` and train it on the provided `dataset`.
@@ -23,32 +23,32 @@ public struct Model {
     }
 }
 
-private func getArticleCountByTopic(_ articles: [Article]) -> [Topic: Int] {
-    var count = [Topic: Int]()
+private func getArticleCountByTopic(_ articles: [Article]) -> [Label: Int] {
+    var count = [Label: Int]()
     for article in articles {
-        count[article.topic] = count[article.topic] ?? 0 + 1
+        count[article.label] = count[article.label] ?? 0 + 1
     }
     return count
 }
 
-private func getWordCountByTopic(_ articles: [Article]) -> [Topic: [String: Int]] {
-    var wordFrequencyCount = [Topic: [String: Int]]()
+private func getWordCountByTopic(_ articles: [Article]) -> [Label: [String: Int]] {
+    var wordFrequencyCount = [Label: [String: Int]]()
     for article in articles {
         for word in article.content {
-            if wordFrequencyCount[article.topic] == nil {
-                wordFrequencyCount[article.topic] = [String: Int]()
+            if wordFrequencyCount[article.label] == nil {
+                wordFrequencyCount[article.label] = [String: Int]()
             }
-            let currentCount = wordFrequencyCount[article.topic]?[word] ?? 0
-            wordFrequencyCount[article.topic]?[word] = currentCount + 1
+            let currentCount = wordFrequencyCount[article.label]?[word] ?? 0
+            wordFrequencyCount[article.label]?[word] = currentCount + 1
         }
     }
     return wordFrequencyCount
 }
 
-private func getTotalWordCountByTopic(_ articles: [Article]) -> [Topic: Int] {
-    var count = [Topic: Int]()
+private func getTotalWordCountByTopic(_ articles: [Article]) -> [Label: Int] {
+    var count = [Label: Int]()
     for article in articles {
-        count[article.topic] = (count[article.topic] ?? 0) + article.content.count
+        count[article.label] = (count[article.label] ?? 0) + article.content.count
     }
     return count
 }

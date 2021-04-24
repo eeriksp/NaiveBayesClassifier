@@ -1,10 +1,9 @@
 import Foundation
 
-// TODO Perhaps rename to `Label`
-public typealias Topic = String
+public typealias Label = String
 
 public struct Article {
-    let topic: Topic
+    let label: Label
     let content: [String]
 }
 
@@ -17,7 +16,7 @@ private func constructArticleFromLine(_ line: String) -> Article {
     let topicAndContent = line.split(separator: ",", maxSplits: 1).map(String.init)
     let topic = topicAndContent[0]
     let content = cleanContent(topicAndContent[1])
-    return Article(topic: topic, content: content)
+    return Article(label: topic, content: content)
 }
 
 /// Turns the content string into an array of words by removing
