@@ -2,14 +2,14 @@ import Foundation
 
 /// The `Model` will be initialized with a training dataset
 /// which the model will use the learn the frequency of different words in different topics.
-/// Then its `predictTopic` method can be used to compute the probabilities
+/// Then its `predictTopic` method (defined as an extension) can be used to compute the probabilities
 /// that a given article belongs to any of the topics the model was trained on
 /// and which are accessible through the `topics` property.
 public struct Model {
     let topics: [Topic]
-    private let wordCountByTopic: [Topic: [String: Int]]
-    private let totalWordCountByTopic: [Topic: Int]
-    private let uniqueWordCount: Int
+    let wordCountByTopic: [Topic: [String: Int]]
+    let totalWordCountByTopic: [Topic: Int]
+    let uniqueWordCount: Int
 
     /// Initialize the `Model` and train it on the provided `dataset`.
     /// Note that the initialization can be quite slow
@@ -21,50 +21,7 @@ public struct Model {
         totalWordCountByTopic = getTotalWordCountByTopic(dataset)
         uniqueWordCount = getUniqueWordCount(dataset)
     }
-
-    /// Compute the probabilities of the given `content`
-    /// belonging to each of the topics the model was trained on.
-    public func predictTopic(_ content: [String]) -> PredictionResult {
-        var probabilities = [Topic: Double]()
-        for topic in topics {
-            probabilities[topic] = getProbabilityOfArticleBelongingToTopic(content: content, topic: topic)
-        }
-        return softmax(probabilities)
-    }
-
-    private func getProbabilityOfArticleBelongingToTopic(content: [String], topic: Topic) -> Double {
-        var probability = 1.0
-        for word in content {
-            probability += log(getWordOccurrenceProbabilityGivenTopic(word: word, topic: topic))
-        }
-        return probability
-    }
-
-    private func getWordOccurrenceProbabilityGivenTopic(word: String, topic: String) -> Double {
-        // the +1 at the end of next line prevents the result value from ever evaluating to zero
-        let wordOccurrencesInCategory = (wordCountByTopic[topic]?[word] ?? 0) + 1
-        return Double(wordOccurrencesInCategory) / Double((totalWordCountByTopic[topic] ?? 0) + uniqueWordCount)
-    }
 }
-
-public typealias PredictionResult = Dictionary<String, Double>
-
-public extension PredictionResult {
-    var topLabel: Topic {
-        get {
-            var mostLikelyTopic = ""
-            var mostLikelyTopicProbability = -Double.infinity
-            for (topic, prob) in self {
-                if prob > mostLikelyTopicProbability {
-                    mostLikelyTopic = topic
-                    mostLikelyTopicProbability = prob
-                }
-            }
-            return mostLikelyTopic
-        }
-    }
-}
-
 
 private func getArticleCountByTopic(_ articles: [Article]) -> [Topic: Int] {
     var count = [Topic: Int]()
